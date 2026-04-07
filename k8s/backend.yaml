@@ -16,7 +16,7 @@ spec:
         proxmox: node2
       containers:
         - name: backend
-          image: YOUR_DOCKERHUB_USERNAME/test-ecom-backend:latest
+          image: thatanikett/test-ecom-backend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000

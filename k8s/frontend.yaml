@@ -16,7 +16,7 @@ spec:
         proxmox: node1
       containers:
         - name: frontend
-          image: YOUR_DOCKERHUB_USERNAME/test-ecom-frontend:latest
+          image: thatanikett/test-ecom-frontend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80

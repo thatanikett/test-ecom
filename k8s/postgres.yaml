@@ -28,7 +28,7 @@ spec:
         proxmox: node3
       containers:
         - name: postgres
-          image: YOUR_DOCKERHUB_USERNAME/test-ecom-postgres:latest
+          image: thatanikett/test-ecom-postgres:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5432
