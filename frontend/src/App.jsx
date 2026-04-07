@@ -45,20 +45,11 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
   const requestDetails = [
     ["Time", formatIsoTime(deployInfo?.receivedAt)],
     ["Runtime mode", deployInfo?.runtimeMode || "Pending"],
-    ["Deployment", deployInfo?.deploymentName || "Pending"],
-    ["Namespace", deployInfo?.namespace || "Pending"],
     ["Service", deployInfo?.serviceName || "Pending"],
-    ["Node / VM", deployInfo?.nodeName || "Pending"],
+    ["K3s Node", deployInfo?.nodeName || "Pending"],
     ["Pod", deployInfo?.podName || "Pending"],
     ["Pod IP", deployInfo?.podIp || "Pending"],
-    ["Hostname", deployInfo?.hostname || "Pending"],
     ["Client IP", deployInfo?.clientIp || "Pending"],
-    ["Forwarded For", deployInfo?.forwardedFor || "Pending"],
-    ["Origin", deployInfo?.requestOrigin || "Pending"],
-    ["Host", deployInfo?.requestHost || "Pending"],
-    ["Protocol", deployInfo?.protocol || "Pending"],
-    ["Method", deployInfo?.requestMethod || "Pending"],
-    ["Path", deployInfo?.requestPath || "/info"],
   ];
 
   return (
@@ -87,7 +78,7 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
             type="button"
           >
             <span className={`status-dot ${deployInfo ? "is-live" : ""}`} />
-            {loading ? "Checking..." : "Deployment status"}
+            {loading ? "Checking..." : "Refresh trace"}
           </button>
           <button className="nav-cta" onClick={onExplore}>
             Enter store
@@ -161,7 +152,7 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
                 </button>
               </div>
               <a href="#collection" className="ghost-link">
-                View featured builds
+                see testimonials
               </a>
             </div>
             <div className="landing-signal-list">
@@ -200,10 +191,11 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
 
       <section className="landing-section landing-section-cta" id="cta">
         <p className="section-label">Last Request Trace</p>
-        <h2>The most recent backend response is annotated with pod, node, VM, and request metadata.</h2>
+        <h2>The latest backend response shows which k3s node and pod handled the request.</h2>
         <p className="cta-copy">
-          Use this panel during k3s testing to verify which backend pod answered,
-          which node hosted it, and how the request reached the service.
+          Use this during cluster testing to confirm backend pod placement and
+          basic request flow. It does not represent the underlying Proxmox host
+          or VM topology.
         </p>
         <div className="request-trace-panel">
           {requestDetails.map(([label, value]) => (
@@ -215,7 +207,7 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
         </div>
         <div className="landing-cta-actions">
           <button className="cta-button" onClick={onCheckStatus}>
-            Refresh deployment status
+            Refresh trace
           </button>
           <button className="secondary-cta-button" onClick={onExplore}>
             Open catalog
@@ -366,7 +358,7 @@ function App() {
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
-            Status
+            Refresh trace
           </div>
         </nav>
       </header>
@@ -528,13 +520,17 @@ function App() {
           >
             <span
               className="status-label"
-              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               Node:
             </span>
             <span
               className="status-value"
-              style={{ fontFamily: "monospace", fontWeight: "600" }}
+              style={{
+                fontFamily: "monospace",
+                fontWeight: "600",
+                color: "var(--text-main)",
+              }}
             >
               {lastRequestInfo.nodeName}
             </span>
@@ -549,7 +545,7 @@ function App() {
           >
             <span
               className="status-label"
-              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               Pod:
             </span>
@@ -559,6 +555,7 @@ function App() {
                 fontFamily: "monospace",
                 fontWeight: "600",
                 fontSize: "0.7rem",
+                color: "var(--text-main)",
               }}
             >
               {lastRequestInfo.podName}
@@ -574,13 +571,17 @@ function App() {
           >
             <span
               className="status-label"
-              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               Pod IP:
             </span>
             <span
               className="status-value"
-              style={{ fontFamily: "monospace", fontWeight: "600" }}
+              style={{
+                fontFamily: "monospace",
+                fontWeight: "600",
+                color: "var(--text-main)",
+              }}
             >
               {lastRequestInfo.podIp}
             </span>

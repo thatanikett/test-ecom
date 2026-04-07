@@ -27,6 +27,7 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: none;
+  zoom: 90%;
 }
 
 body {
@@ -121,14 +122,10 @@ html::-webkit-scrollbar {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.landing-nav-link,
-.ghost-link {
+.landing-nav-link {
   color: rgba(255, 255, 255, 0.78);
   text-decoration: none;
   transition: color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
-}
-
-.landing-nav-link {
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -137,14 +134,22 @@ html::-webkit-scrollbar {
   font-weight: 500;
 }
 
-.landing-nav-link:hover,
-.ghost-link:hover {
-  color: white;
+.ghost-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  font-weight: 500;
 }
 
 .landing-nav-link:hover {
+  color: white;
   background: rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
+}
+
+.ghost-link:hover {
+  color: var(--text-main);
+  text-decoration: underline;
 }
 
 .nav-cta {
@@ -859,6 +864,13 @@ header {
   border: 1px solid var(--border);
   width: 260px;
   z-index: 1000;
+  color: var(--text-main);
+}
+
+.node-chip {
+  color: white;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
 }
 
 .monitor-header {
@@ -867,7 +879,7 @@ header {
   margin-bottom: 0.5rem;
   font-weight: 700;
   font-size: 0.75rem;
-  color: var(--primary);
+  color: var(--text-main);
 }
 
 .status-row {
@@ -883,6 +895,7 @@ header {
 
 .status-value {
   font-weight: 600;
+  color: var(--text-main);
 }
 
 @keyframes fadeInDown {
