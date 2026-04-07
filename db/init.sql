@@ -11,51 +11,51 @@ CREATE TABLE IF NOT EXISTS products (
 INSERT INTO products (sku, name, category, price, image, description)
 VALUES
   (
-    'K8S-OPS-001',
-    'Kubernetes Operations Playbook',
-    'Books',
-    39.99,
-    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80',
-    'A practical guide to running production workloads across k3s, Kubernetes, and Proxmox-based clusters.'
+    'MON-4K-001',
+    '32" Ultra-Wide 4K Monitor',
+    'Monitors',
+    549.99,
+    'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=900&q=80',
+    'Experience crystal-clear visuals with our ultra-wide 4K HDR monitor, perfect for developers and designers.'
   ),
   (
-    'LAB-HW-002',
-    'Homelab Mini Server',
-    'Hardware',
-    649.00,
-    'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=900&q=80',
-    'Low-noise mini server tuned for container workloads, local CI, and lightweight virtualization.'
-  ),
-  (
-    'NET-SEC-003',
-    'Zero Trust Gateway',
-    'Networking',
+    'KBD-MECH-002',
+    'RGB Mechanical Keyboard',
+    'Keyboards',
     129.00,
-    'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=900&q=80',
-    'Secure edge gateway for private service exposure, lab segmentation, and internal API access control.'
+    'https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?auto=format&fit=crop&w=900&q=80',
+    'Professional-grade mechanical keyboard with tactile blue switches and custom RGB lighting.'
   ),
   (
-    'OBS-MON-004',
-    'Cluster Monitoring Kit',
-    'Observability',
-    89.50,
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80',
-    'Starter bundle for logs, metrics, and uptime tracking across your frontend, backend, and database services.'
-  ),
-  (
-    'DEV-AI-005',
-    'Platform Engineer Starter Pack',
-    'Bundles',
-    59.00,
+    'MOBO-Z790-003',
+    'Z790 Gaming Motherboard',
+    'Components',
+    299.00,
     'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80',
-    'A curated set of deployment templates, environment examples, and workflow docs for shipping faster.'
+    'High-performance Z790 chipset supporting the latest Intel 13th and 14th Gen processors.'
   ),
   (
-    'DB-BKP-006',
-    'Postgres Backup Vault',
-    'Data',
-    24.99,
-    'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=900&q=80',
-    'Automated backup storage with restore-ready snapshots for your local development and demo databases.'
+    'MOUSE-WL-004',
+    'Wireless Gaming Mouse',
+    'Accessories',
+    89.50,
+    'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=900&q=80',
+    'Lightweight ergonomic design with ultra-fast 1ms response time and long-lasting battery life.'
+  ),
+  (
+    'SSD-NVME-005',
+    '2TB NVMe PCIe 5.0 SSD',
+    'Storage',
+    189.00,
+    'https://images.unsplash.com/photo-1597872200370-499df515a442?auto=format&fit=crop&w=900&q=80',
+    'Unmatched read/write speeds up to 10,000 MB/s for lightning-fast boot times and data access.'
+  ),
+  (
+    'GPU-RTX-006',
+    'GeForce RTX 4080 Super',
+    'Components',
+    1199.99,
+    'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=900&q=80',
+    'Power your AI development and gaming with the latest NVIDIA architecture and 16GB VRAM.'
   )
 ON CONFLICT (sku) DO NOTHING;

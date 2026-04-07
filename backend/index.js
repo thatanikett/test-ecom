@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const os = require("os");
 
 const app = express();
 app.use(cors());
@@ -48,11 +49,31 @@ app.get("/products", async (req, res) => {
 });
 
 app.get("/info", (req, res) => {
+  const forwardedFor = req.headers["x-forwarded-for"];
+  const clientIp = Array.isArray(forwardedFor)
+    ? forwardedFor[0]
+    : forwardedFor?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
+
   res.json({
+    deploymentName: process.env.DEPLOYMENT_NAME || "backend",
+    namespace: process.env.POD_NAMESPACE || "default",
+    serviceName: process.env.SERVICE_NAME || "backend",
+    runtimeMode:
+      process.env.RUNTIME_MODE ||
+      (process.env.KUBERNETES_SERVICE_HOST ? "k3s-cluster" : "local-dev"),
     podName: process.env.POD_NAME || "local-pod",
     nodeName: process.env.NODE_NAME || "local-vm",
     podIp: process.env.POD_IP || "127.0.0.1",
-    hostname: require("os").hostname() || "localhost",
+    hostname: os.hostname() || "localhost",
+    requestPath: req.originalUrl,
+    requestMethod: req.method,
+    requestHost: req.get("host") || "unknown",
+    requestOrigin: req.get("origin") || "direct-browser",
+    forwardedFor: forwardedFor || "not-set",
+    clientIp,
+    userAgent: req.get("user-agent") || "unknown",
+    protocol: req.protocol || "http",
+    receivedAt: new Date().toISOString(),
   });
 });
 

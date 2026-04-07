@@ -1,17 +1,261 @@
 import { useState, useEffect } from "react";
 import "./index.css";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "/api";
+const getViewFromPath = () =>
+  window.location.pathname.startsWith("/catalog") ? "catalog" : "landing";
+
+const landingSignals = [
+  "Curated desktop systems, monitors, and components",
+  "Designed for creators, streamers, and builders",
+  "Fast checkout, premium drops, live stock visibility",
+];
+
+const landingTestimonials = [
+  {
+    quote:
+      "The whole store feels curated. I found a display and desk setup that looked editorial, not mass-market.",
+    name: "Aarav Mehta",
+    role: "Content creator",
+  },
+  {
+    quote:
+      "Fast, clean, and visually sharp. The catalog is easy to scan and the products actually feel premium.",
+    name: "Nina Brooks",
+    role: "Streaming setup builder",
+  },
+  {
+    quote:
+      "It has the confidence of a niche hardware brand, but the shopping flow stays simple and direct.",
+    name: "Daniel Park",
+    role: "PC enthusiast",
+  },
+];
+
+const formatIsoTime = (value) => {
+  if (!value) return "Waiting for request";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  return date.toLocaleString();
+};
+
+function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
+  const requestDetails = [
+    ["Time", formatIsoTime(deployInfo?.receivedAt)],
+    ["Runtime mode", deployInfo?.runtimeMode || "Pending"],
+    ["Deployment", deployInfo?.deploymentName || "Pending"],
+    ["Namespace", deployInfo?.namespace || "Pending"],
+    ["Service", deployInfo?.serviceName || "Pending"],
+    ["Node / VM", deployInfo?.nodeName || "Pending"],
+    ["Pod", deployInfo?.podName || "Pending"],
+    ["Pod IP", deployInfo?.podIp || "Pending"],
+    ["Hostname", deployInfo?.hostname || "Pending"],
+    ["Client IP", deployInfo?.clientIp || "Pending"],
+    ["Forwarded For", deployInfo?.forwardedFor || "Pending"],
+    ["Origin", deployInfo?.requestOrigin || "Pending"],
+    ["Host", deployInfo?.requestHost || "Pending"],
+    ["Protocol", deployInfo?.protocol || "Pending"],
+    ["Method", deployInfo?.requestMethod || "Pending"],
+    ["Path", deployInfo?.requestPath || "/info"],
+  ];
+
+  return (
+    <div className="landing-page">
+      <div className="landing-noise" />
+      <header className="landing-nav">
+        <div className="landing-brandmark">
+          <span className="brandmark-dot" />
+          Tech Store
+        </div>
+        <nav className="landing-nav-links">
+          <button type="button" className="landing-nav-link">
+            Home
+          </button>
+          <button type="button" className="landing-nav-link" onClick={onExplore}>
+            Catalog
+          </button>
+          <button type="button" className="landing-nav-link">
+            Builds
+          </button>
+        </nav>
+        <div className="landing-nav-actions">
+          <button
+            className="nav-status-button"
+            onClick={onCheckStatus}
+            type="button"
+          >
+            <span className={`status-dot ${deployInfo ? "is-live" : ""}`} />
+            {loading ? "Checking..." : "Deployment status"}
+          </button>
+          <button className="nav-cta" onClick={onExplore}>
+            Enter store
+          </button>
+        </div>
+      </header>
+
+      <section className="landing-hero">
+        <div className="landing-stage">
+          <div className="stage-halo stage-halo-one" />
+          <div className="stage-halo stage-halo-two" />
+          <div className="stage-halo stage-halo-three" />
+
+          <img
+            src="/image.png"
+            alt="Retro display"
+            className="floating-asset asset-display"
+          />
+          <img
+            src="/image copy.png"
+            alt="Blue desktop monitor"
+            className="floating-asset asset-monitor"
+          />
+          <img
+            src="/image copy 2.png"
+            alt="Server rack"
+            className="floating-asset asset-rack"
+          />
+          <img
+            src="/image copy 4.png"
+            alt="Open desktop chassis"
+            className="floating-asset asset-chassis"
+          />
+
+          <div className="landing-hero-copy landing-hero-copy-centered">
+            <h1 className="landing-title">
+              Shop the
+              <br/>
+              gear that
+              <br />
+              upgrades
+              <br />
+              your setup
+            </h1>
+            <p className="landing-subtitle">
+              A more cinematic storefront for desktops, displays, and creative
+              gear, staged with depth, motion, and collectible energy.
+            </p>
+            <div className="landing-actions">
+              <div className="catalog-invite">
+                <img
+                  src="/cursor.png"
+                  alt="Cursor pointing at open catalog"
+                  className="catalog-cursor"
+                />
+                <button className="cta-button" onClick={onExplore}>
+                  Open Shop Catalog
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+              <a href="#collection" className="ghost-link">
+                View featured builds
+              </a>
+            </div>
+            <div className="landing-signal-list">
+              {landingSignals.map((signal) => (
+                <span key={signal}>{signal}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section landing-section-proof" id="collection">
+        <div className="section-intro">
+          <p className="section-label">Testimonials</p>
+          <h2>People remember the atmosphere first, then how easy it was to buy.</h2>
+        </div>
+        <div className="proof-layout">
+          <div className="proof-visual">
+            <div className="proof-badge">Trusted setups</div>
+            <img src="/image copy.png" alt="Desktop monitor" className="proof-monitor" />
+            <img src="/image copy 4.png" alt="Open chassis system" className="proof-chassis" />
+          </div>
+          <div className="testimonial-stack">
+            {landingTestimonials.map((item) => (
+              <article className="testimonial-card" key={item.name}>
+                <p className="testimonial-quote">"{item.quote}"</p>
+                <div className="testimonial-meta">
+                  <strong>{item.name}</strong>
+                  <span>{item.role}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section landing-section-cta" id="cta">
+        <p className="section-label">Last Request Trace</p>
+        <h2>The most recent backend response is annotated with pod, node, VM, and request metadata.</h2>
+        <p className="cta-copy">
+          Use this panel during k3s testing to verify which backend pod answered,
+          which node hosted it, and how the request reached the service.
+        </p>
+        <div className="request-trace-panel">
+          {requestDetails.map(([label, value]) => (
+            <div className="request-trace-row" key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </div>
+          ))}
+        </div>
+        <div className="landing-cta-actions">
+          <button className="cta-button" onClick={onCheckStatus}>
+            Refresh deployment status
+          </button>
+          <button className="secondary-cta-button" onClick={onExplore}>
+            Open catalog
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
 
 function App() {
+  const [view, setView] = useState(getViewFromPath);
   const [products, setProducts] = useState([]);
   const [deployInfo, setDeployInfo] = useState(null);
   const [lastRequestInfo, setLastRequestInfo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    getDeploymentInfo();
+  }, []);
+
+  useEffect(() => {
+    const syncRoute = () => setView(getViewFromPath());
+
+    window.addEventListener("popstate", syncRoute);
+    return () => window.removeEventListener("popstate", syncRoute);
+  }, []);
+
+  const navigateTo = (nextView) => {
+    const path = nextView === "catalog" ? "/catalog" : "/";
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, "", path);
+    }
+    setView(nextView);
+  };
 
   const fetchProducts = () => {
     setLoading(true);
@@ -31,25 +275,40 @@ function App() {
   };
 
   const getDeploymentInfo = () => {
-    setLoading(true);
+    setStatusLoading(true);
     fetch(`${BACKEND_URL}/info`)
       .then((res) => res.json())
       .then((data) => {
         setDeployInfo(data);
         setLastRequestInfo(data);
-        setLoading(false);
+        setStatusLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching info:", err);
-        setLoading(false);
+        setStatusLoading(false);
       });
   };
 
+  if (view === "landing") {
+    return (
+      <LandingPage
+        onExplore={() => navigateTo("catalog")}
+        onCheckStatus={getDeploymentInfo}
+        deployInfo={deployInfo}
+        loading={statusLoading}
+      />
+    );
+  }
+
   return (
     <div className="layout">
-      {/* Modern High-Efficiency Header */}
+      {/* Premium Header */}
       <header>
-        <a href="/" className="brand">
+        <div
+          className="brand"
+          onClick={() => navigateTo("landing")}
+          style={{ cursor: "pointer" }}
+        >
           <svg
             width="32"
             height="32"
@@ -57,16 +316,16 @@ function App() {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <rect width="32" height="32" rx="8" fill="#4f46e5" />
+            <rect width="32" height="32" rx="8" fill="#2563eb" />
             <path
-              d="M10 10L22 22M22 10L10 22"
+              d="M8 16H24M16 8V24"
               stroke="white"
               strokeWidth="3"
               strokeLinecap="round"
             />
           </svg>
-          ClusterStore
-        </a>
+          Tech Store
+        </div>
 
         <div className="search-bar">
           <svg
@@ -82,23 +341,20 @@ function App() {
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <input
-            type="text"
-            placeholder="Search infrastructure, books, and nodes..."
-          />
+          <input type="text" placeholder="Search products..." />
         </div>
 
         <nav className="nav-links">
-          <span className="nav-link">Orders</span>
-          <span className="nav-link">Account</span>
+          <span className="nav-link">Best Sellers</span>
+          <span className="nav-link">New Arrivals</span>
           <div
             className="nav-link"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
             onClick={getDeploymentInfo}
           >
             <svg
-              width="24"
-              height="24"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -106,9 +362,9 @@ function App() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
             Status
           </div>
@@ -117,27 +373,51 @@ function App() {
 
       {/* Categories Bar */}
       <div className="categories">
-        <span className="category-item">All Depts</span>
-        <span className="category-item">Hardware</span>
-        <span className="category-item">Books</span>
-        <span className="category-item">Net Tools</span>
-        <span className="category-item">Observability</span>
-        <span className="category-item">Bundles</span>
-        <span className="category-item" style={{ color: "#4f46e5" }}>
-          Black Friday Deals
+        <span className="category-item">Monitors</span>
+        <span className="category-item">Keyboards</span>
+        <span className="category-item">Components</span>
+        <span className="category-item">Storage</span>
+        <span className="category-item" style={{ color: "#2563eb" }}>
+          Summer Deals
         </span>
       </div>
 
       <main className="container">
-        {/* Dynamic Hero Banner */}
+        {/* Improved Main View Banner */}
         <div className="hero">
           <h1>
-            Modern Stack. <br /> Scaled Daily.
+            Upgrade Your Desk. <br /> Elevate Your Performance.
           </h1>
           <p>
-            The ultimate destination for platform engineers and homelab
-            enthusiasts.
+            Browse our curated collection of professional tech products. Free
+            shipping on all orders over $99.
           </p>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <button
+              className="cta-button"
+              style={{
+                padding: "0.75rem 1.5rem",
+                borderRadius: "8px",
+                fontSize: "0.95rem",
+              }}
+            >
+              Shop Now
+            </button>
+            <button
+              className="cta-button"
+              style={{
+                padding: "0.75rem 1.5rem",
+                borderRadius: "8px",
+                fontSize: "0.95rem",
+                background: "transparent",
+                border: "1px solid var(--border)",
+                boxShadow: "none",
+                color: "var(--text-main)",
+              }}
+            >
+              Learn More
+            </button>
+          </div>
         </div>
 
         {/* Product Grid */}
@@ -175,23 +455,27 @@ function App() {
               style={{
                 textAlign: "center",
                 gridColumn: "1 / -1",
-                padding: "4rem",
+                padding: "6rem 2rem",
+                background: "var(--card-bg)",
+                borderRadius: "32px",
+                border: "1px solid var(--border)",
               }}
             >
-              <h2 style={{ color: "#64748b" }}>Postgres not connected.</h2>
-              <p style={{ color: "#94a3b8" }}>
-                Start the database to view the catalog.
+              <h2 style={{ color: "white", marginBottom: "1rem" }}>
+                No signals detected.
+              </h2>
+              <p style={{ color: "var(--text-muted)", marginBottom: "2rem" }}>
+                Establish a database connection to restore the catalog link.
               </p>
               <button
-                className="add-btn"
+                className="cta-button"
                 onClick={fetchProducts}
                 style={{
-                  width: "auto",
-                  padding: "0 2rem",
-                  margin: "2rem auto",
+                  padding: "0.75rem 2rem",
+                  fontSize: "0.95rem",
                 }}
               >
-                Retry
+                Reconnect
               </button>
             </div>
           )}
@@ -201,8 +485,29 @@ function App() {
       {/* Real-time Cluster Monitor Sticker */}
       {lastRequestInfo && (
         <div className="monitor-sticker">
-          <div className="monitor-header">
-            <div className="node-chip">CLUSTER MONITOR</div>
+          <div
+            className="monitor-header"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+              paddingBottom: "0.5rem",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <div
+              className="node-chip"
+              style={{
+                background: "var(--primary)",
+                padding: "2px 8px",
+                borderRadius: "6px",
+                fontSize: "0.7rem",
+                fontWeight: "700",
+              }}
+            >
+              CLUSTER MONITOR
+            </div>
             <div
               style={{
                 width: 8,
@@ -213,23 +518,72 @@ function App() {
               }}
             ></div>
           </div>
-          <div className="status-row">
-            <span className="status-label">Environment:</span>
-            <span className="status-value">K3s Production</span>
+          <div
+            className="status-row"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "0.8rem",
+            }}
+          >
+            <span
+              className="status-label"
+              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+            >
+              Node:
+            </span>
+            <span
+              className="status-value"
+              style={{ fontFamily: "monospace", fontWeight: "600" }}
+            >
+              {lastRequestInfo.nodeName}
+            </span>
           </div>
-          <div className="status-row">
-            <span className="status-label">Active Node:</span>
-            <span className="status-value">{lastRequestInfo.nodeName}</span>
-          </div>
-          <div className="status-row">
-            <span className="status-label">Active Pod:</span>
-            <span className="status-value" style={{ fontSize: "0.7rem" }}>
+          <div
+            className="status-row"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "0.8rem",
+            }}
+          >
+            <span
+              className="status-label"
+              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+            >
+              Pod:
+            </span>
+            <span
+              className="status-value"
+              style={{
+                fontFamily: "monospace",
+                fontWeight: "600",
+                fontSize: "0.7rem",
+              }}
+            >
               {lastRequestInfo.podName}
             </span>
           </div>
-          <div className="status-row">
-            <span className="status-label">Pod IP:</span>
-            <span className="status-value">{lastRequestInfo.podIp}</span>
+          <div
+            className="status-row"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "0.8rem",
+            }}
+          >
+            <span
+              className="status-label"
+              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+            >
+              Pod IP:
+            </span>
+            <span
+              className="status-value"
+              style={{ fontFamily: "monospace", fontWeight: "600" }}
+            >
+              {lastRequestInfo.podIp}
+            </span>
           </div>
         </div>
       )}
