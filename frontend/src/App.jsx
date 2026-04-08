@@ -42,6 +42,8 @@ const formatIsoTime = (value) => {
 };
 
 function LandingPage({ onExplore, onCheckStatus, deployInfo, lastRequestInfo, loading }) {
+  const [activeTrace, setActiveTrace] = useState("backend");
+
   const machineForNode = (nodeName) => {
     if (!nodeName) return "Unknown PVE";
     const mapping = [
@@ -56,25 +58,47 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, lastRequestInfo, lo
     return match ? match.host : "Unknown PVE";
   };
 
-  const buildTraceRows = (serviceName, info, fallbackName) => [
-    ["Service", info?.serviceName || fallbackName || "Pending"],
-    ["Runtime", info?.runtimeMode || "k3s-cluster"],
-    [
-      "Node",
-      info?.nodeName ||
-        (serviceName === "Database" ? info?.nodeName || "k3s-node" : "Pending"),
-    ],
-    ["Pod", info?.podName || "Pending"],
-    ["Pod IP", info?.podIp || "Pending"],
-    ["Machine", machineForNode(info?.nodeName)],
-    ["Client IP", info?.clientIp || "Pending"],
-    ["Received At", formatIsoTime(info?.receivedAt)],
-  ];
+  const tracePresets = {
+    backend: {
+      label: "Backend",
+      serviceName: "backend",
+      info: lastRequestInfo,
+    },
+    frontend: {
+      label: "Frontend",
+      serviceName: "frontend",
+      info: deployInfo
+        ? {
+            ...deployInfo,
+            serviceName: "frontend",
+            podName: "frontend-pod",
+          }
+        : null,
+    },
+    database: {
+      label: "Database",
+      serviceName: "postgres",
+      info: deployInfo
+        ? {
+            ...deployInfo,
+            serviceName: "postgres",
+            podName: "postgres-stateful-pod",
+          }
+        : null,
+    },
+  };
 
-  const traceServices = [
-    { title: "Backend Trace", info: lastRequestInfo, fallback: "backend" },
-    { title: "Frontend Trace", info: lastRequestInfo, fallback: "frontend" },
-    { title: "Database Trace", info: lastRequestInfo, fallback: "postgres" },
+  const activeTraceConfig = tracePresets[activeTrace];
+  const activeTraceInfo = activeTraceConfig.info;
+  const requestDetails = [
+    ["Time", formatIsoTime(activeTraceInfo?.receivedAt)],
+    ["Runtime mode", activeTraceInfo?.runtimeMode || "Pending"],
+    ["Service", activeTraceInfo?.serviceName || activeTraceConfig.serviceName],
+    ["K3s Node", activeTraceInfo?.nodeName || "Pending"],
+    ["Machine", machineForNode(activeTraceInfo?.nodeName)],
+    ["Pod", activeTraceInfo?.podName || "Pending"],
+    ["Pod IP", activeTraceInfo?.podIp || "Pending"],
+    ["Client IP", activeTraceInfo?.clientIp || "Pending"],
   ];
 
   return (
@@ -215,22 +239,29 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, lastRequestInfo, lo
       </section>
 
       <section className="landing-section landing-section-cta" id="cta">
-        <p className="section-label">Live Trace</p>
-        <h2>Backend, frontend, and database traces in one glance.</h2>
+        <p className="section-label">Last Request Trace</p>
+        <h2>The latest service response shows which k3s node and pod handled the request.</h2>
         <p className="cta-copy">
-          Each table surfaces pod, node, machine (PVE host), and client metadata
-          from the latest `/info` call so you can verify traffic flow quickly.
+          Toggle the service to inspect backend, frontend, and database request
+          traces with pod, node, machine, and client metadata.
         </p>
-        <div className="trace-grid">
-          {traceServices.map(({ title, info, fallback }) => (
-            <div className="trace-table" key={title}>
-              <div className="trace-table-heading">{title}</div>
-              {buildTraceRows(title, info, fallback).map(([label, value]) => (
-                <div className="request-trace-row" key={`${title}-${label}`}>
-                  <span>{label}</span>
-                  <strong>{value}</strong>
-                </div>
-              ))}
+        <div className="trace-toggle-group" role="tablist" aria-label="Trace service switcher">
+          {Object.entries(tracePresets).map(([key, config]) => (
+            <button
+              key={key}
+              type="button"
+              className={`trace-toggle ${activeTrace === key ? "is-active" : ""}`}
+              onClick={() => setActiveTrace(key)}
+            >
+              {config.label}
+            </button>
+          ))}
+        </div>
+        <div className="request-trace-panel">
+          {requestDetails.map(([label, value]) => (
+            <div className="request-trace-row" key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
             </div>
           ))}
         </div>
