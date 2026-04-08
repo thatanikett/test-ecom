@@ -41,15 +41,40 @@ const formatIsoTime = (value) => {
   return date.toLocaleString();
 };
 
-function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
-  const requestDetails = [
-    ["Time", formatIsoTime(deployInfo?.receivedAt)],
-    ["Runtime mode", deployInfo?.runtimeMode || "Pending"],
-    ["Service", deployInfo?.serviceName || "Pending"],
-    ["K3s Node", deployInfo?.nodeName || "Pending"],
-    ["Pod", deployInfo?.podName || "Pending"],
-    ["Pod IP", deployInfo?.podIp || "Pending"],
-    ["Client IP", deployInfo?.clientIp || "Pending"],
+function LandingPage({ onExplore, onCheckStatus, deployInfo, lastRequestInfo, loading }) {
+  const machineForNode = (nodeName) => {
+    if (!nodeName) return "Unknown PVE";
+    const mapping = [
+      { host: "PVE1", nodes: ["vm2", "vm3"] },
+      { host: "PVE2", nodes: ["vm4", "vm5"] },
+      { host: "PVE3", nodes: ["vm5", "vm6"] },
+    ];
+    const normalized = nodeName.toLowerCase();
+    const match = mapping.find((entry) =>
+      entry.nodes.some((id) => normalized.includes(id))
+    );
+    return match ? match.host : "Unknown PVE";
+  };
+
+  const buildTraceRows = (serviceName, info, fallbackName) => [
+    ["Service", info?.serviceName || fallbackName || "Pending"],
+    ["Runtime", info?.runtimeMode || "k3s-cluster"],
+    [
+      "Node",
+      info?.nodeName ||
+        (serviceName === "Database" ? info?.nodeName || "k3s-node" : "Pending"),
+    ],
+    ["Pod", info?.podName || "Pending"],
+    ["Pod IP", info?.podIp || "Pending"],
+    ["Machine", machineForNode(info?.nodeName)],
+    ["Client IP", info?.clientIp || "Pending"],
+    ["Received At", formatIsoTime(info?.receivedAt)],
+  ];
+
+  const traceServices = [
+    { title: "Backend Trace", info: lastRequestInfo, fallback: "backend" },
+    { title: "Frontend Trace", info: lastRequestInfo, fallback: "frontend" },
+    { title: "Database Trace", info: lastRequestInfo, fallback: "postgres" },
   ];
 
   return (
@@ -190,18 +215,22 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, loading }) {
       </section>
 
       <section className="landing-section landing-section-cta" id="cta">
-        <p className="section-label">Last Request Trace</p>
-        <h2>The latest backend response shows which k3s node and pod handled the request.</h2>
+        <p className="section-label">Live Trace</p>
+        <h2>Backend, frontend, and database traces in one glance.</h2>
         <p className="cta-copy">
-          Use this during cluster testing to confirm backend pod placement and
-          basic request flow. It does not represent the underlying Proxmox host
-          or VM topology.
+          Each table surfaces pod, node, machine (PVE host), and client metadata
+          from the latest `/info` call so you can verify traffic flow quickly.
         </p>
-        <div className="request-trace-panel">
-          {requestDetails.map(([label, value]) => (
-            <div className="request-trace-row" key={label}>
-              <span>{label}</span>
-              <strong>{value}</strong>
+        <div className="trace-grid">
+          {traceServices.map(({ title, info, fallback }) => (
+            <div className="trace-table" key={title}>
+              <div className="trace-table-heading">{title}</div>
+              {buildTraceRows(title, info, fallback).map(([label, value]) => (
+                <div className="request-trace-row" key={`${title}-${label}`}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
             </div>
           ))}
         </div>

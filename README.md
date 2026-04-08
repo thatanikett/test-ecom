@@ -314,7 +314,12 @@ This is useful when:
 - you want to confirm traffic is hitting different Pods
 - you want to verify node placement in k3s
 
-## 9. Current Kubernetes Placement
+## 9. Trace Panel Details
+
+- The frontend's “Last Request Trace” section renders three tables (backend, frontend, database) that consume the `/info` response and show service, runtime, pod, pod IP, client IP, and a `Machine` row.
+- The `Machine` value shows `PVE1`, `PVE2`, or `PVE3` by inspecting the Kubernetes node name (e.g., `vm2`, `vm3`, etc.) so you can tell which Proxmox host currently runs that pod.
+
+## 10. Current Kubernetes Placement
 
 Based on the manifests in this repo:
 

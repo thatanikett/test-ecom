@@ -534,26 +534,37 @@ html::-webkit-scrollbar {
   font-size: 1.05rem;
 }
 
-.request-trace-panel {
-  width: min(880px, 100%);
+.trace-grid {
+  width: 100%;
   margin: 0 auto 2rem;
-  padding: 1.35rem;
-  border-radius: 28px;
-  text-align: left;
-  background:
-    radial-gradient(circle at top right, rgba(94, 143, 255, 0.18), transparent 28%),
-    rgba(17, 24, 57, 0.98);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 28px 60px rgba(12, 16, 37, 0.18);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.trace-table {
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(20, 23, 43, 0.06);
+  box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08);
+}
+
+.trace-table-heading {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary-dark);
 }
 
 .request-trace-row {
   display: grid;
-  grid-template-columns: 160px minmax(0, 1fr);
-  gap: 1rem;
-  padding: 0.9rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 0.4rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(20, 23, 43, 0.08);
 }
 
 .request-trace-row:last-child {
@@ -561,16 +572,17 @@ html::-webkit-scrollbar {
 }
 
 .request-trace-row span {
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .request-trace-row strong {
   font-family: "Space Grotesk", sans-serif;
-  font-size: 0.96rem;
-  line-height: 1.45;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--text-main);
   word-break: break-word;
 }
 
