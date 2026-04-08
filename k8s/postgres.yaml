@@ -24,8 +24,6 @@ spec:
       labels:
         app: db
     spec:
-      nodeSelector:
-        proxmox: node3
       containers:
         - name: postgres
           image: thatanikett/test-ecom-postgres:latest

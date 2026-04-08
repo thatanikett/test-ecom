@@ -73,7 +73,7 @@ The Kubernetes manifests in this repo use these node labels:
 - `proxmox=node2` for `backend`
 - `proxmox=node3` for `postgres`
 
-That means your k3s nodes must be labeled to match those selectors.
+That means your k3s nodes must be labeled to match those selectors. Note that the deployments and statefulset no longer hard pin to those selectors; instead they rely on anti-affinity rules to spread pods while keeping the labels for operational visibility.
 
 ## 1. Run Locally with Docker Compose
 
@@ -181,13 +181,7 @@ Use the same pattern for `node2` and `node3`.
 
 ### Why Labels Matter
 
-The manifests pin workloads to different nodes:
-
-- `frontend` Deployment goes to nodes with `proxmox=node1`
-- `backend` Deployment goes to nodes with `proxmox=node2`
-- `postgres` StatefulSet goes to nodes with `proxmox=node3`
-
-If those labels are missing, the Pods will stay in `Pending`.
+The manifests annotate pods with these labels so it is easy to see where each service landed in monitoring output, though the deployments themselves no longer pin to a specific label. Anti-affinity encourages scheduler spreading, and as long as the nodes have the labels, the pods will drift across different VMs rather than stacking up on a single host.
 
 ## 4. Deploy to k3s
 
@@ -198,6 +192,11 @@ kubectl apply -f k8s/postgres.yaml
 kubectl apply -f k8s/backend.yaml
 kubectl apply -f k8s/frontend.yaml
 ```
+
+### Anti-affinity and replica behavior
+
+- Frontend and backend now run 3 replicas and declare hostname-based pod anti-affinity (`preferredDuringSchedulingIgnoredDuringExecution`) so Kubernetes spreads them across different VMs when capacity exists.
+- There is no `nodeSelector` anymore, so the scheduler can reschedule pods anywhere; the proxmox labels help you trace where they run but are not required for scheduling.
 
 ### Why This Order
 
@@ -218,8 +217,8 @@ kubectl get statefulsets
 ### What You Should Expect
 
 - 1 Postgres Pod
-- 2 Backend Pods
-- 2 Frontend Pods
+- 3 Backend Pods
+- 3 Frontend Pods
 
 ### Inspect Detailed Status
 
@@ -249,6 +248,8 @@ kubectl logs statefulset/postgres
 ## 6. Access the Application in k3s
 
 The frontend Service is of type `LoadBalancer`.
+
+If your k3s installation does not expose external IPs automatically, install MetalLB (layer 2 mode) or another load-balancer so the `frontend` service can receive an IP.
 
 Check it with:
 
@@ -317,9 +318,9 @@ This is useful when:
 
 Based on the manifests in this repo:
 
-- [frontend.yaml](/home/aniket/Desktop/k8s-dev-group/test-ecom/k8s/frontend.yaml) deploys 2 frontend replicas on `proxmox=node1`
-- [backend.yaml](/home/aniket/Desktop/k8s-dev-group/test-ecom/k8s/backend.yaml) deploys 2 backend replicas on `proxmox=node2`
-- [postgres.yaml](/home/aniket/Desktop/k8s-dev-group/test-ecom/k8s/postgres.yaml) deploys 1 postgres replica on `proxmox=node3`
+- [frontend.yaml](/home/aniket/Desktop/k8s-dev-group/test-ecom/k8s/frontend.yaml) deploys 3 frontend replicas with hostname-level pod anti-affinity so Kubernetes spreads them across VMs rather than stacking on a single host.
+- [backend.yaml](/home/aniket/Desktop/k8s-dev-group/test-ecom/k8s/backend.yaml) deploys 3 backend replicas with the same anti-affinity guidance.
+- [postgres.yaml](/home/aniket/Desktop/k8s-dev-group/test-ecom/k8s/postgres.yaml) still runs a single-stateful Postgres pod, but the node selector has been removed so k3s can reschedule it on any available node during maintenance.
 
 ## 10. Troubleshooting
 
@@ -381,3 +382,8 @@ kubectl logs deploy/backend
 - Postgres data persists in k3s through a PersistentVolumeClaim
 - Frontend proxies API traffic through Nginx using `/api`
 
+## 12. High Availability Considerations
+
+- **Database:** The current setup runs a single Postgres instance. For higher availability you will need a replicated Postgres solution (Patroni, PgBouncer with replica, etc.) plus storage that survives node failover so the database can fail over transparently.
+- **Frontend/backend replicas:** Anti-affinity plus 3 replicas each keeps the application online even if a VM or node is drained; Kubernetes will reschedule any pod evicted from a host automatically across the remaining nodes.
+- **Load balancer:** Make sure your k3s deployment offers a load balancer (MetalLB is the lightweight choice for bare-metal) so the frontend service gains an external IP rather than depending on a single VM’s networking stack.
