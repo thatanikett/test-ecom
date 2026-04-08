@@ -47,8 +47,8 @@ function LandingPage({ onExplore, onCheckStatus, deployInfo, lastRequestInfo, lo
   const machineForNode = (nodeName) => {
     if (!nodeName) return "Unknown PVE";
     const mapping = [
-      { host: "PVE1", nodes: ["vm2", "vm3"] },
-      { host: "PVE2", nodes: ["vm4", "vm5"] },
+      { host: "PVE1", nodes: ["vm1", "vm2"] },
+      { host: "PVE2", nodes: ["vm3", "vm4"] },
       { host: "PVE3", nodes: ["vm5", "vm6"] },
     ];
     const normalized = nodeName.toLowerCase();
@@ -347,6 +347,7 @@ function App() {
         onExplore={() => navigateTo("catalog")}
         onCheckStatus={getDeploymentInfo}
         deployInfo={deployInfo}
+        lastRequestInfo={lastRequestInfo}
         loading={statusLoading}
       />
     );
